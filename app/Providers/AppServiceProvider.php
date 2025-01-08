@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // $this->app->bind(UserService::class, UserServiceImp::class);
+                $this->app->singleton(\App\Services\User\UserService::class, \App\Services\User\UserServiceImp::class);
+
     }
 
     /**
