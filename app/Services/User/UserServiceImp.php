@@ -106,4 +106,20 @@ class UserServiceImp implements UserService
         }
         return null;
     }
+
+    /**
+     * Update user profile
+     *
+     * @param array $data
+     * @param int $id
+     * @return mixed
+     */
+    public function updateProfile(array $data, $id)
+    {
+        $user = $this->userRepository->find($id);
+        if ($user) {
+            return $this->userRepository->update($data, $id);
+        }
+        throw new \Exception('User not found');
+    }
 }

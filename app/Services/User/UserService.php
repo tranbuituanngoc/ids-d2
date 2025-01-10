@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\User;
 
 interface UserService
@@ -9,4 +10,5 @@ interface UserService
     public function delete($id);
     public function find($id);
     public function paginate($perPage);
+    public function updateProfile(array $data, $id);
 }
