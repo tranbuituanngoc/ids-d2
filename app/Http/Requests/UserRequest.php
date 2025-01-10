@@ -27,15 +27,15 @@ class UserRequest extends FormRequest
             // Rules for updating a user
             return [
                 'name' => ['sometimes', 'string', 'max:255'],
-                'email' => ['sometimes', 'string', 'email', 'max:255', 'unique:users'],
+                'email' => ['sometimes', 'string', 'email', 'max:255'],
                 'password' => [
                     'sometimes',
                     'string',
                     'min:8',
-                    // 'regex:/[A-Z]/', // must contain at least one uppercase letter
-                    // 'regex:/[a-z]/', // must contain at least one lowercase letter
-                    // 'regex:/[0-9]/', // must contain at least one digit
-                    // 'regex:/[@$!%*?&#]/' // must contain a special character
+                    'regex:/[A-Z]/', // must contain at least one uppercase letter
+                    'regex:/[a-z]/', // must contain at least one lowercase letter
+                    'regex:/[0-9]/', // must contain at least one digit
+                    'regex:/[@$!%*?&#]/' // must contain a special character
                 ],
             ];
         }

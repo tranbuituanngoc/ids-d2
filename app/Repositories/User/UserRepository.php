@@ -34,4 +34,14 @@ class UserRepository extends EloquentRepository
     {
         return $this->model->where($attribute, $value)->first();
     }
+    /**
+     * Paginate model
+     * 
+     * @param int $perPage
+     * @return mixed
+     */
+    public function paginate($perPage)
+    {
+        return $this->model->paginate($perPage);
+    }
 }
