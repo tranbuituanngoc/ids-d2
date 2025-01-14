@@ -8,17 +8,18 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    protected $userService ;
+    protected $userService;
 
-    public function __construct(UserService  $userService )
+    public function __construct(UserService  $userService)
     {
-        $this->userService  = $userService ;
+        $this->userService  = $userService;
     }
 
     // Lấy tất cả người dùng
     public function index()
     {
-        $users = $this->userService ->all();
+        $perPage = config('app.per_page');
+        $users = $this->userService->paginate($perPage);
         return view('user.index', compact('users'));
     }
 
@@ -31,37 +32,54 @@ class UserController extends Controller
     // Tạo người dùng mới
     public function store(UserRequest $request)
     {
-        $data = $request->validated();
-        $this->userService ->create($data);
-        return redirect()->route('user.index');
+        try {
+            $data = $request->validated();
+            $this->userService->create($data);
+
+            return response()->json(['success' => true, 'message' => 'User created successfully.']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        }
     }
 
     // Hiển thị chi tiết người dùng
     public function show($id)
     {
-        $user = $this->userService ->find($id);
-        return view('user.show', compact('user'));
+        $user = $this->userService->find($id);
+        return response()->json(['user' => $user]);
     }
 
     // Hiển thị form chỉnh sửa người dùng
     public function edit($id)
     {
-        $user = $this->userService ->find($id);
+        $user = $this->userService->find($id);
         return view('user.edit', compact('user'));
     }
 
     // Cập nhật thông tin người dùng
     public function update(UserRequest $request, $id)
     {
-        $data = $request->validated();
-        $this->userService ->update($data, $id);
-        return redirect()->route('user.index');
+        try {
+            $data = $request->validated();
+            $result = $this->userService->update($data, $id);
+
+            return response()->json(['success' => true, 'message' => 'User updated successfully.', 'emails' => $result]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
     // Xóa người dùng
     public function destroy($id)
     {
-        $this->userService ->delete($id);
-        return redirect()->route('user.index');
+        try {
+            $this->userService->delete($id);
+
+            return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 }

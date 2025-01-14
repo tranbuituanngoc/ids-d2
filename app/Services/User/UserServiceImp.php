@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Services\User;
+
 use App\Repositories\User\UserRepository;
 use App\Services\User\UserService;
+use Illuminate\Support\Facades\Log;
 
 class UserServiceImp implements UserService
 {
@@ -10,6 +13,17 @@ class UserServiceImp implements UserService
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
+    }
+
+    /**
+     * Paginate model
+     *
+     * @param int $perPage
+     * @return mixed
+     */
+    public function paginate($perPage)
+    {
+        return $this->userRepository->paginate($perPage);
     }
 
     /**
@@ -59,18 +73,23 @@ class UserServiceImp implements UserService
      */
     public function update(array $data, $id)
     {
-        echo $data['email'];
         $user = $this->userRepository->find($id);
-        //check if the username already exists
-        $existUser = $this->userRepository->findBy('email', $data['email']);
-        if ($user->email != $data['email'] && $existUser) {
-            throw new \Exception('Email already exists');
+
+        if ($user->email !== $data['email']) {
+            $existUser = $this->userRepository->findBy('email', $data['email']);
+            if ($existUser) {
+                throw new \Exception('Email already exists');
+            }
         }
         if ($user) {
+            $data['name'] = !empty($data['name']) ? $data['name'] : $user->name;
+            $data['email'] = !empty($data['email']) ? $data['email'] : $user->email;
+            $data['password'] = !empty($data['password']) ? bcrypt($data['password']) : $user->password;
+
             $this->userRepository->update($data, $id);
             return $user;
         }
-        return null;
+        throw new \Exception('User not found');
     }
 
     /**
