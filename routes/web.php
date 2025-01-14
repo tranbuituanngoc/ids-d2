@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,11 @@ Route::get('/', function () {
 Auth::routes();
 Route::middleware('auth')->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/users', [App\Http\Controllers\UserController::class, 'index']);
+    Route::prefix("profile")->name("profile.")->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::post('/', [ProfileController::class, 'update'])->name('update');
+    });
+    // Route::get('/users', [UserController::class, 'index']);
     Route::prefix("users")->name("user.")->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
