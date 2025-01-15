@@ -7,6 +7,17 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+
+    /**
+     * A list of the exception types that are not reported.
+     *
+     * @var array
+     */
+    protected $dontReport = [
+        // Thêm các ngoại lệ tùy chỉnh không cần báo cáo
+        UserNotFoundException::class,
+    ];
+
     /**
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
@@ -25,6 +36,10 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (UserNotFoundException $e, $request) {
+            return $e->render($request);
         });
     }
 }

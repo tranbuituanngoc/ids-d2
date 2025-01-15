@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Services\User\UserService;
 
 class ProfileController extends Controller
@@ -36,22 +37,27 @@ class ProfileController extends Controller
      */
     public function update(ProfileRequest $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $data = $request->validated();
+            $data = $request->validated();
 
-        $data = $request->only('name', 'email');
+            $data = $request->only('name', 'email');
 
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::delete('public/images/' . $user->avatar);
+            if ($request->hasFile('avatar')) {
+                if ($user->avatar) {
+                    Storage::delete('public/images/' . $user->avatar);
+                }
+                $avatarName = time() . '.' . $request->avatar->extension();
+                $request->avatar->move(public_path('images'), $avatarName);
+                $data['avatar'] = $avatarName;
             }
-            $avatarName = time() . '.' . $request->avatar->extension();
-            $request->avatar->move(public_path('images'), $avatarName);
-            $data['avatar'] = $avatarName;
-        }
-        $this->userService->updateProfile($data, $user->id);
+            $this->userService->updateProfile($data, $user->id);
 
-        return redirect()->route('profile.index');
+            return redirect()->route('profile.index');
+        } catch (\Exception $e) {
+            Log::error("Error Update Profile:" . $e->getMessage());
+            return back()->with('error', 'Profile update failed');
+        }
     }
 }
