@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['custom_daily'],
             'ignore_exceptions' => false,
         ],
 
@@ -73,6 +73,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'custom_daily' => [
+            'driver' => 'custom',
+            'via' => App\Logging\CustomDailyLogger::class,
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -89,7 +96,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
