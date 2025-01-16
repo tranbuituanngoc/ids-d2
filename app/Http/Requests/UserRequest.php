@@ -22,6 +22,7 @@ class UserRequest extends FormRequest
                     'regex:/[0-9]/', // must contain at least one digit
                     'regex:/[@$!%*?&#]/' // must contain a special character
                 ],
+                'role_id' => ['sometimes', 'integer'],
             ];
         } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
             // Rules for updating a user
@@ -37,6 +38,7 @@ class UserRequest extends FormRequest
                     'regex:/[0-9]/', // must contain at least one digit
                     'regex:/[@$!%*?&#]/' // must contain a special character
                 ],
+                'role_id' => ['sometimes', 'integer'],
             ];
         }
 
