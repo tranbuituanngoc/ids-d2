@@ -49,9 +49,13 @@ class UserServiceImp implements UserService
         if ($user) {
             throw new \Exception('Email already exists');
         }
+        if (!isset($data['role_id'])) {
+            $data['role_id'] = 2;
+        }
 
         return $this->userRepository->create($data);
     }
+
 
     /**
      * Find a model by its primary key
@@ -85,6 +89,7 @@ class UserServiceImp implements UserService
             $data['name'] = !empty($data['name']) ? $data['name'] : $user->name;
             $data['email'] = !empty($data['email']) ? $data['email'] : $user->email;
             $data['password'] = !empty($data['password']) ? bcrypt($data['password']) : $user->password;
+            $data['role_id'] = !empty($data['role_id']) ? $data['role_id'] : $user->role_id;
 
             $this->userRepository->update($data, $id);
             return $user;
